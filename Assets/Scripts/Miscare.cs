@@ -7,22 +7,21 @@ public class Miscare : MonoBehaviour
 {
     private Rigidbody2D rb;
     public int viata;
-    
+
     public float moveSpeed = 5f;
     public float jumpForce = 5f;
-    
-    private bool isJumping = false;
 
+    private bool isJumping = false;
     private bool damage = false;
-    // Start is called before the first frame update
-    
+
+    private SpriteRenderer spriteRenderer;
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isJumping = false;
         }
-        
     }
 
     void OnTriggerEnter2D(Collider2D collider)
@@ -32,17 +31,28 @@ public class Miscare : MonoBehaviour
             damage = true;
         }
     }
-    
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the SpriteRenderer
     }
 
-    // Update is called once per frame
     void Update()
     {
         float moveX = Input.GetAxis("Horizontal");
         rb.velocity = new Vector2(moveX * moveSpeed, rb.velocity.y);
+
+        // Flip sprite based on direction
+        if (moveX > 0)
+        {
+            spriteRenderer.flipX = false;
+        }
+        else if (moveX < 0)
+        {
+            spriteRenderer.flipX = true;
+        }
+
         if (Input.GetButtonDown("Jump") && !isJumping)
         {
             rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
@@ -53,7 +63,8 @@ public class Miscare : MonoBehaviour
         {
             viata--;
             damage = false;
-        }else if (viata <= 0)
+        }
+        else if (viata <= 0)
         {
             SceneManager.LoadScene("SampleScene");
             damage = false;
